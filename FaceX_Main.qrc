@@ -1,0 +1,19 @@
+<RCC>
+    <qresource>
+        <file>Face-X_FrontEnd-main/FaceX_Main/qmldir</file>
+        <file>Face-X_FrontEnd-main/qtquickcontrols2.conf</file>
+        <file>FaceX_Main.qmlproject</file>
+        <file>FaceX_Main/Constants.qml</file>
+        <file>FaceX_Main/EventListModel.qml</file>
+        <file>FaceX_Main/EventListSimulator.qml</file>
+        <file>FaceX_Main/qmldir</file>
+        <file>FaceX_MainContent/App.qml</file>
+        <file>FaceX_MainContent/claro.png</file>
+        <file>FaceX_MainContent/escuro.png</file>
+        <file>FaceX_MainContent/Logo_claro.png</file>
+        <file>FaceX_MainContent/Logo_dark.png</file>
+        <file>FaceX_MainContent/main.qml</file>
+        <file>FaceX_MainContent/Screen01.qml</file>
+        <file>qtquickcontrols2.conf</file>
+    </qresource>
+</RCC>
