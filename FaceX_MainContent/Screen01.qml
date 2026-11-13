@@ -126,38 +126,91 @@ Item {
     }
 
 
-    // MOCK DATA (talvez tenha que alterar isso na integração (não sei um jeito bom de deixar))
+    // DADOS DINÂMICOS (prontos para integração futura com Python)
+    // Os modelos abaixo começam VAZIOS. Os ids e os nomes dos campos (roles) são
+    // exatamente os mesmos de antes, então toda a UI e a lógica continuam iguais.
+    //
+    // Pontos de entrada para a integração (todos aceitam lista de objetos JS/QVariantList):
+    //   root.definirOcorrencias(lista)   -> substitui todas as ocorrências ativas
+    //   root.adicionarOcorrencia(obj)    -> acrescenta uma ocorrência ativa
+    //   root.definirCadastrados(lista)   -> substitui os suspeitos cadastrados
+    //   root.definirHistorico(lista)     -> substitui o histórico
+    // Também ficam expostos como aliases: ocorrenciasModel, cadastradosModel, historicoModel.
+    //
+    // Campos esperados:
+    //   ocorrência: idOcorrencia, nome, sim, cam, idade, situacao, crime, local,
+    //               status, dataHora, fotoReferencia, frameCapturado
+    //   cadastrado: idCad, nome, idade, situacao, cadastro, descricao, foto
+    //   histórico:  idOcorrencia, dataHora, pessoa, camera, similaridade, status
 
-    ListModel {
-        id: modeloOcorrencias
-        ListElement {
-            idOcorrencia: "ID 37"
-            nome: "Gustavo Henrique"
-            sim: "58.76%"
-            cam: "CAM-001"
-            idade: "19 anos"
-            situacao: "SUSPEITO"
-            crime: "Roubo — SIMULAÇÃO"
-            local: "Faculdade"
-            status: "PENDING"
-            dataHora: "2026-10-29 19:23:24.868966"
-            fotoReferencia: ""
-            frameCapturado: ""
+    property alias ocorrenciasModel:  modeloOcorrencias
+    property alias cadastradosModel:  modeloCadastrados
+    property alias historicoModel:    modeloHistorico
+
+    ListModel { id: modeloOcorrencias }
+    ListModel { id: modeloCadastrados }
+    ListModel { id: modeloHistorico }
+
+    // Garante que todo campo exista e seja texto (ListModel fixa os roles no 1º item)
+    function valorOuPadrao(v, padrao) {
+        return (v === undefined || v === null) ? padrao : String(v)
+    }
+
+    function adicionarOcorrencia(o) {
+        modeloOcorrencias.append({
+            idOcorrencia:   valorOuPadrao(o.idOcorrencia, "-"),
+            nome:           valorOuPadrao(o.nome, "-"),
+            sim:            valorOuPadrao(o.sim, "-"),
+            cam:            valorOuPadrao(o.cam, "-"),
+            idade:          valorOuPadrao(o.idade, "-"),
+            situacao:       valorOuPadrao(o.situacao, "-"),
+            crime:          valorOuPadrao(o.crime, "-"),
+            local:          valorOuPadrao(o.local, "-"),
+            status:         valorOuPadrao(o.status, "-"),
+            dataHora:       valorOuPadrao(o.dataHora, "-"),
+            fotoReferencia: valorOuPadrao(o.fotoReferencia, ""),
+            frameCapturado: valorOuPadrao(o.frameCapturado, "")
+        })
+    }
+
+    function definirOcorrencias(lista) {
+        modeloOcorrencias.clear()
+        root.indexOcorrenciaSelecionada = 0
+        if (!lista) return
+        for (var i = 0; i < lista.length; i++) adicionarOcorrencia(lista[i])
+    }
+
+    function definirCadastrados(lista) {
+        modeloCadastrados.clear()
+        if (!lista) return
+        for (var i = 0; i < lista.length; i++) {
+            var c = lista[i]
+            modeloCadastrados.append({
+                idCad:     valorOuPadrao(c.idCad, ""),
+                nome:      valorOuPadrao(c.nome, ""),
+                idade:     valorOuPadrao(c.idade, ""),
+                situacao:  valorOuPadrao(c.situacao, "SUSPEITO"),
+                cadastro:  valorOuPadrao(c.cadastro, "ATIVO"),
+                descricao: valorOuPadrao(c.descricao, ""),
+                foto:      valorOuPadrao(c.foto, "")
+            })
         }
     }
 
-    ListModel {
-        id: modeloCadastrados
-        ListElement { idCad: "2"; nome: "Gabriel Ferro"; idade: "21"; situacao: "SUSPEITO"; cadastro: "ATIVO"; descricao: "Suspeito de furto na região central"; foto: "" }
-        ListElement { idCad: "1"; nome: "Gustavo Henrique"; idade: "19"; situacao: "SUSPEITO"; cadastro: "ATIVO"; descricao: "Roubo — SIMULAÇÃO"; foto: "" }
-        ListElement { idCad: "3"; nome: "Henrique Keller"; idade: "47"; situacao: "PROCURADO"; cadastro: "ATIVO"; descricao: "Mandado de prisão em aberto"; foto: "" }
-    }
-
-    ListModel {
-        id: modeloHistorico
-        ListElement { idOcorrencia: "35"; dataHora: "16/10/2026 19:47:11"; pessoa: "Gustavo Henrique"; camera: "CAM-001"; similaridade: "86.42%"; status: "DISCARDED" }
-        ListElement { idOcorrencia: "34"; dataHora: "16/10/2026 19:45:46"; pessoa: "Gustavo Henrique"; camera: "CAM-001"; similaridade: "92.03%"; status: "DISCARDED" }
-        ListElement { idOcorrencia: "33"; dataHora: "16/10/2026 18:58:07"; pessoa: "Henrique Keller"; camera: "CAM-001"; similaridade: "97.90%"; status: "CONFIRMED" }
+    function definirHistorico(lista) {
+        modeloHistorico.clear()
+        if (!lista) return
+        for (var i = 0; i < lista.length; i++) {
+            var h = lista[i]
+            modeloHistorico.append({
+                idOcorrencia: valorOuPadrao(h.idOcorrencia, "-"),
+                dataHora:     valorOuPadrao(h.dataHora, "-"),
+                pessoa:       valorOuPadrao(h.pessoa, "-"),
+                camera:       valorOuPadrao(h.camera, "-"),
+                similaridade: valorOuPadrao(h.similaridade, "-"),
+                status:       valorOuPadrao(h.status, "-")
+            })
+        }
     }
 
 
